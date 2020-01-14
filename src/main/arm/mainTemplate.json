@@ -81,8 +81,7 @@
                             "priority": 300,
                             "direction": "Inbound",
                             "destinationPortRanges": [
-                                "9060",
-                                "9080"
+                                "22"
                             ]
                         }
                     }
