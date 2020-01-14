@@ -18,7 +18,6 @@
     <name>${project.artifactId}</name>
 
     <properties>
-        <git.proj>arm-ubuntu-elk</git.proj>
-        <template.validation.tests.directory>${basedir}/../../azure-quickstart-templates/test/arm-ttk</template.validation.tests.directory>
+        <template.validation.tests.directory>${basedir}/../azure-quickstart-templates/test/arm-ttk</template.validation.tests.directory>
     </properties>
 </project>
