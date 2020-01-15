@@ -82,8 +82,8 @@
                             "direction": "Inbound",
                             "destinationPortRanges": [
                                 "22",
-                                "5601",
-                                "9200"
+                                "5044",
+                                "5601"
                             ]
                         }
                     }
