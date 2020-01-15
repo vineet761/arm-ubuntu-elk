@@ -226,5 +226,19 @@
                 }
             }
         }
-    ]
+    ],
+    "outputs": {
+        "kibanaServerConsole": {
+            "type": "string",
+            "value": "[concat('http://',reference(variables('publicIPAddressName')).dnsSettings.fqdn,':5601/app/kibana')]"
+        },
+        "logstashServerIpAddress": {
+            "type": "string",
+            "value": "[reference(variables('publicIPAddressName')).ipAddress]"
+        },
+        "logstashServerPort": {
+            "type": "string",
+            "value": "5044"
+        }
+    }
 }
