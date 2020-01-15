@@ -1,41 +1,50 @@
 #!/bin/sh
-while getopts "l:u:p:m:c:n:t:d:i:s:a:" opt; do
-    case $opt in
-        l)
-            imKitLocation=$OPTARG #SAS URI of the IBM Installation Manager install kit in Azure Storage
-        ;;
-        u)
-            userName=$OPTARG #IBM user id for downloading artifacts from IBM web site
-        ;;
-        p)
-            password=$OPTARG #password of IBM user id for downloading artifacts from IBM web site
-        ;;
-        m)
-            adminUserName=$OPTARG #User id for admimistrating WebSphere Admin Console
-        ;;
-        c)
-            adminPassword=$OPTARG #Password for administrating WebSphere Admin Console
-        ;;
-        n)
-            db2ServerName=$OPTARG #Host name/IP address of IBM DB2 Server
-        ;;
-        t)
-            db2ServerPortNumber=$OPTARG #Server port number of IBM DB2 Server
-        ;;
-        d)
-            db2DBName=$OPTARG #Database name of IBM DB2 Server
-        ;;
-        i)
-            db2DBUserName=$OPTARG #Database user name of IBM DB2 Server
-        ;;
-        s)
-            db2DBUserPwd=$OPTARG #Database user password of IBM DB2 Server
-        ;;
-        a)
-            scriptLocation=$OPTARG #Script location ends in a trailing slash
-        ;;
-    esac
-done
-
 echo "Deploying Elastic Stack..."
-echo "Deploying Elastic Stack completed"
+
+# Install JRE
+apt-get update && apt-get install openjdk-8-jre-headless -y
+
+# Install ELK
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+apt-get install apt-transport-https -y
+echo "deb https://artifacts.elastic.co/packages/6.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-6.x.list
+apt-get update && apt-get install elasticsearch logstash kibana -y
+
+# Configure and start ElasticSearch
+cp /etc/elasticsearch/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml.bak
+sed -i "s/#network.host: 192.168.0.1/network.host: localhost/g" /etc/elasticsearch/elasticsearch.yml
+sed -i "s/#http.port:/http.port:/g" /etc/elasticsearch/elasticsearch.yml
+systemctl start elasticsearch
+systemctl enable elasticsearch
+
+# Configure and start Kibana
+cp /etc/kibana/kibana.yml /etc/kibana/kibana.yml.bak
+sed -i "s/#server.port:/server.port:/g" /etc/kibana/kibana.yml
+sed -i "s/#server.host: \"localhost\"/server.host: \"0.0.0.0\"/g" /etc/kibana/kibana.yml
+sed -i "s/#elasticsearch.hosts:/elasticsearch.hosts:/g" /etc/kibana/kibana.yml
+systemctl start kibana
+systemctl enable kibana
+
+# Configure and start Logstash
+cat <<EOF > /etc/logstash/conf.d/was_logstash.conf
+input {
+    beats {
+        port => "5044"
+        ssl => false
+    }
+}
+filter {
+    json {
+        source => "message"
+    }
+}
+output {
+    elasticsearch {
+        hosts => "localhost:9200"
+    }
+}
+EOF
+systemctl start logstash
+systemctl enable logstash
+
+echo "Deploy Elastic Stack completed"
