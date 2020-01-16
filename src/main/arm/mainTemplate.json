@@ -45,7 +45,7 @@
         }
     },
     "variables": {
-        "virtualMachineName": "elk-admin",
+        "virtualMachineName": "[concat('elkVM', take(replace(parameters('guidValue'),'-',''),6))]",
         "dnsLabelPrefix": "[concat(parameters('dnsLabelPrefix'), take(replace(parameters('guidValue'),'-',''),6))]",
         "virtualNetworkName": "[concat(variables('dnsLabelPrefix'), '-vnet')]",
         "networkSecurityGroupName": "[concat(variables('dnsLabelPrefix'), '-nsg')]",
