@@ -7,12 +7,12 @@ apt-get update && apt-get install openjdk-8-jre-headless -y
 # Install ELK
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 apt-get install apt-transport-https -y
-echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-7.x.list
-apt-get update && apt-get install elasticsearch logstash kibana -y
+echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+sudo apt-get update && sudo apt-get install elasticsearch -y
 
 # Configure and start ElasticSearch
 cp /etc/elasticsearch/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml.bak
-sed -i "s/#network.host: 192.168.0.1/network.host: localhost/g" /etc/elasticsearch/elasticsearch.yml
+sed -i "s/#network.host: 192.168.0.1/network.host: 0.0.0.0/g" /etc/elasticsearch/elasticsearch.yml
 sed -i "s/#http.port:/http.port:/g" /etc/elasticsearch/elasticsearch.yml
 systemctl start elasticsearch
 systemctl enable elasticsearch
